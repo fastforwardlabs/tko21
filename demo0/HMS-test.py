@@ -19,14 +19,16 @@ from pyspark.sql.types import Row, StructField, StructType, StringType, IntegerT
 spark = SparkSession\
     .builder\
     .appName("PythonSQL")\
-    .config("spark.executor.memory", "4g")\
-    .config("spark.executor.instances", 2)\
-    .config("spark.driver.maxResultSize","4g")\
-    .config("fs.s3a.metadatastore.impl","org.apache.hadoop.fs.s3a.s3guard.NullMetadataStore")\
+    .master("local[*]") \
     .getOrCreate()
 
 #    .config("spark.hadoop.fs.s3a.s3guard.ddb.region", "us-west-2")\
 #    .config("spark.yarn.access.hadoopFileSystems","s3a://ml-field/demo/flight-analysis/data/")\
+#    .config("spark.executor.instances", 2)\
+#    .config("spark.driver.maxResultSize","4g")\
+#    .config("spark.executor.memory", "4g")\
+#    .config("fs.s3a.metadatastore.impl","org.apache.hadoop.fs.s3a.s3guard.NullMetadataStore")\
+
 
 spark.sql("SHOW databases").show()
 spark.sql("USE default")
@@ -38,12 +40,6 @@ spark.sql("SELECT DepDelay FROM `default`.`flights` WHERE DepDelay > 0.0").take(
 
 #spark.sql("SELECT COUNT(*) FROM `default`.`airports`").show()
 spark.sql("SELECT * FROM `default`.`airports` LIMIT 10").show()
-
-
-
-
-
-
 
 
 
@@ -84,6 +80,8 @@ STORED AS TextFile
 LOCATION 's3a://ml-field/demo/flight-analysis/data/flights_csv/'
 '''
 spark.sql(statement) 
+spark.sql("DESCRIBE EXTENDED `default`.`flights`").collect()
+
 
 #spark.sql("DROP TABLE IF EXISTS airports").show()
 statement = '''
@@ -100,28 +98,7 @@ STORED AS TextFile
 LOCATION 's3a://ml-field/demo/flight-analysis/data/airports_csv/'
 '''
 spark.sql(statement) 
-
-
-#spark.sql("DROP TABLE IF EXISTS airports_extended").show()
-statement = '''
-CREATE EXTERNAL TABLE IF NOT EXISTS `default`.`airports_extended` (
-`ident` string , 
-`type` string ,
-`name` string ,
-`elevation_ft` string ,
-`continent` string ,
-`iso_country` string ,
-`iso_region` string ,
-`municipality` string ,
-`gps_code` string ,
-`iata_code` string ,
-`local_code` string ,
-`coordinates` string )
-ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
-STORED AS TextFile 
-LOCATION 's3a://ml-field/demo/flight-analysis/data/airports-extended/'
-'''
-spark.sql(statement) 
+spark.sql("DESCRIBE EXTENDED `default`.`airports`").collect()
 
     
-#spark.stop()
+spark.stop()
