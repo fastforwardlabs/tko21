@@ -7,6 +7,7 @@ FROM docker.repository.cloudera.com/cdsw/engine:11-cml1.4
       libapparmor1 \
       libclang-dev \
       lsb-release \
+      sudo \
       psmisc && \
     wget https://download2.rstudio.org/server/trusty/amd64/rstudio-server-1.2.1335-amd64.deb && \
     dpkg -i rstudio-server-1.2.1335-amd64.deb && \
